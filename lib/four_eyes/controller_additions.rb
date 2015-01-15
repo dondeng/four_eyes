@@ -16,20 +16,16 @@ module FourEyes
       #
       def add_maker_checker_to_resource(*args)
 
-        # Add maker function
-        four_eyes_resource.class.add_before
+        # Add maker functions
+        four_eyes_resource_class.add_maker_create_function(self, :maker_create, *args)
+        four_eyes_resource_class.add_maker_update_function(self, :maker_update, *args)
 
-        # Add checker function
+        # Add checker functions
 
       end
 
 
-
-
-
-
-
-      def cancan_resource_class
+      def four_eyes_resource_class
         if ancestors.map(&:to_s).include? "InheritedResources::Actions"
           InheritedResource
         else
@@ -38,5 +34,15 @@ module FourEyes
       end
     end
 
+    def self.included(base)
+      base.extend ClassMethods
+    end
+
+  end
+end
+
+if defined? ActionController::Base
+  ActionController::Base.class_eval do
+    include FourEyes::ControllerAdditions
   end
 end
