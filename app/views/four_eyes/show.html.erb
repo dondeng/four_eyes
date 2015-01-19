@@ -1,0 +1,46 @@
+<div class="four_eyes_container">
+  <h1>Action</h1>
+
+  <table>
+    <tr>
+      <td>ID</td>
+      <td><%= @action.id %></td>
+    </tr>
+    <tr>
+      <td>Date</td>
+      <td><%= @action.created_at %></td>
+    </tr>
+    <tr>
+      <td>Action</td>
+      <td><%= @action.action_type %></td>
+    </tr>
+    <tr>
+      <td>Maker-Checker Resource</td>
+      <td><%= @action.resource_class_name %></td>
+    </tr>
+    <tr>
+      <td>Maker resource ID</td>
+      <td><%= @action.maker_resource_id %></td>
+    </tr>
+    <tr>
+      <td>Checker Resource ID</td>
+      <td><%= @action.checker_resource_id %></td>
+    </tr>
+    <tr>
+      <td>Object</td>
+      <td><%= @action.object_resource_class_name %></td>
+    </tr>
+    <tr>
+      <td>Object ID</td>
+      <td><%= @action.object_resource_id %></td>
+    </tr>
+    <tr>
+      <td>Data</td>
+      <td><%= @action.data.to_s %></td>
+    </tr>
+    <tr>
+      <td>Status</td>
+      <td><%= @action.status %></td>
+    </tr>
+  </table>
+</div>

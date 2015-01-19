@@ -1,0 +1,30 @@
+<div class="four_eyes_container">
+  <h1>Actions</h1>
+
+  <table cellspacing="0">
+    <thead>
+    <tr>
+      <th class="nobg">ID</th>
+      <th>Date</th>
+      <th>Action</th>
+      <th>Maker ID</th>
+      <th>Object</th>
+      <th>Status</th>
+      <th>Data</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @actions.each do |action| %>
+        <tr class="<%= cycle("even", "odd") -%>">
+          <td><%=link_to(action.id, action_path(action)) %></td>
+          <td><%= action.created_at %></td>
+          <td><%=h action.action_type %></td>
+          <td><%=h action.maker_resource_id  %></td>
+          <td><%=h action.object_resource_class_name  %></td>
+          <td><%=h action.status  %></td>
+          <td><%=h action.data %></td>
+        </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
