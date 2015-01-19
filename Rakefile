@@ -14,7 +14,6 @@ require 'jeweler'
 
 Jeweler::Tasks.new do |gem|
   gem.name = "four_eyes"
-  gem.executables = "jeweler"
   gem.summary = "A gem to implement the maker-checker principle. The 4-eyes principle"
   gem.email = "dondeng2@gmail.com"
   gem.homepage = "https://github.com/dondeng/four_eyes"

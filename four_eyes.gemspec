@@ -14,7 +14,6 @@ Gem::Specification.new do |s|
   s.date = "2015-01-19"
   s.description = "A gem to implement the maker-checker principle. The 4-eyes principle"
   s.email = "dondeng2@gmail.com"
-  s.executables = ["jeweler"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.md"
@@ -53,11 +52,17 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.6"])
       s.add_development_dependency(%q<rake>, [">= 0"])
+      s.add_development_dependency(%q<jeweler>, [">= 0"])
+      s.add_development_dependency(%q<bundler>, ["~> 1.6"])
+      s.add_development_dependency(%q<rake>, [">= 0"])
     else
       s.add_dependency(%q<four_eyes>, [">= 0"])
       s.add_dependency(%q<bundler>, ["~> 1.6"])
       s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<rails>, ["~> 4.1.9"])
+      s.add_dependency(%q<jeweler>, [">= 0"])
+      s.add_dependency(%q<bundler>, ["~> 1.6"])
+      s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<bundler>, ["~> 1.6"])
       s.add_dependency(%q<rake>, [">= 0"])
@@ -70,6 +75,9 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<bundler>, ["~> 1.6"])
     s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<rails>, ["~> 4.1.9"])
+    s.add_dependency(%q<jeweler>, [">= 0"])
+    s.add_dependency(%q<bundler>, ["~> 1.6"])
+    s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<bundler>, ["~> 1.6"])
     s.add_dependency(%q<rake>, [">= 0"])
