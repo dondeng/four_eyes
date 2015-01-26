@@ -60,6 +60,7 @@ module FourEyes
           false
         end
       end
+
     end
 
     def initialize(controller, *args)

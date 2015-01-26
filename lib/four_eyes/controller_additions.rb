@@ -19,9 +19,6 @@ module FourEyes
         # Add maker functions
         four_eyes_resource_class.add_maker_create_function(self, :maker_create, *args)
         four_eyes_resource_class.add_maker_update_function(self, :maker_update, *args)
-
-        # Add checker functions
-
       end
 
 
@@ -37,7 +34,6 @@ module FourEyes
     def self.included(base)
       base.extend ClassMethods
     end
-
   end
 end
 
