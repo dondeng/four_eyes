@@ -7,15 +7,12 @@ module FourEyes
     #
     def self.add_maker_create_function(controller_class, method, *args)
       options = args.extract_options!
-
       controller_class.send :define_method, method do |*args|
-
         "#{method} #{args}"
         resource_class_name = args[0]
         resource_id = args[1]
         object_class_name = args[2]
         data = args[3]
-
 
         action = FourEyes::Action.new(resource_class_name: resource_class_name,
                                       maker_resource_id: resource_id,
@@ -31,14 +28,11 @@ module FourEyes
           false
         end
       end
-
     end
 
     def self.add_maker_update_function(controller_class, method, *args)
       options = args.extract_options!
-
       controller_class.send :define_method, method do |*args|
-
         "#{method} #{args}"
         resource_class_name = args[0]
         resource_id = args[1]
@@ -56,10 +50,39 @@ module FourEyes
         if action.save
           true
         else
-          # TODO - dondeng - Bettr to raise an exception here
+          # TODO - dondeng - Better to raise an exception here
           false
         end
       end
+    end
+
+    def self.add_maker_delete_function(controller_class, method, *args)
+      options = args.extract_options!
+      controller_class.send :define_method, method do |*args|
+        "#{method} #{args}"
+        resource_class_name = args[0]
+        resource_id = args[1]
+        object_class_name = args[2]
+        object_resource_id = args[3]
+        data = args[4]
+
+        action = FourEyes::Action.new(resource_class_name: resource_class_name,
+                                      maker_resource_id: resource_id,
+                                      action_type: 'action_delete',
+                                      object_resource_class_name: object_class_name,
+                                      object_resource_id: object_resource_id,
+                                      status: 'Initiated',
+                                      data: data)
+        if action.save
+          true
+        else
+          # TODO - dondeng - Better to raise an exception here
+          false
+        end
+      end
+    end
+
+    def self.add_maker_create_redirect(controller_class, method, *args)
 
     end
 

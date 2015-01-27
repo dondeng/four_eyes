@@ -45,23 +45,18 @@ module FourEyes
           action.maker_resource_id != resource_id
         end
 
-
         # Perform the checker action for the maker checker actions
         # Dispatch to function to process the corresponding action (create, upated, delete)
         #
-        # @params id - The id of the action being authorized
-        # @params checker_resource_id - The id of the actor performing the authorization
+        # @param id - The id of the action being authorized
+        # @param checker_resource_id - The id of the actor performing the authorization
         #
         def authorize
           @action = Action.find(params[:id])
           checker_resource_id = params[:checker_resource_id].to_i
           if eligible_to_check(@action, checker_resource_id)
             if @action && @action.initiated? && checker_resource_id
-              if @action.action_type == 'action_create'
-                checker_create(@action, checker_resource_id)
-              elsif @action.action_type == 'action_update'
-                checker_update(@action, checker_resource_id)
-              end
+              self.send(@action.action_type.gsub('action_','checker_'), @action, checker_resource_id)
             end
           else
             flash[:notice] = "You are not eligible to authorize this action"
@@ -69,12 +64,10 @@ module FourEyes
           end
         end
 
-
-
         # Retrieve hash of saved parameters and instantiate a new object of type object_resource_class_name
         #
-        # @params action - The action to authorize
-        # @params resource_id - The id of the actor performing the authorization
+        # @param action - The action to authorize
+        # @param resource_id - The id of the actor performing the authorization
         #
         def checker_create(action, resource_id)
           object_resource = action.object_resource_class_name.constantize.new(action.data.deep_symbolize_keys)
@@ -96,10 +89,11 @@ module FourEyes
 
         # Retrieve hash of saved parameters and update the object of type object_resource_class_name
         #
-        # @params action - The action to authorize
-        # @params resource_id - The id of the actor performing the authorization
+        # @param action - The action to authorize
+        # @param resource_id - The id of the actor performing the authorization
         #
         def checker_update(action, resource_id)
+          begin
           object_resource = action.object_resource_class_name.constantize.find(action.object_resource_id)
           if object_resource.update_attributes(action.data.deep_symbolize_keys)
             action.status = 'Authorized'
@@ -115,13 +109,45 @@ module FourEyes
             flash[:error] = object_resource.errors.full_messages
             redirect_to action: :index and return
           end
+          rescue ActiveRecord::RecordNotFound
+            flash[:error] = 'Record not found'
+            redirect_to action: :index and return
+          end
+        end
+
+        # Retrieve a delete action and call destroy on it
+        #
+        # @param action - The action to authorize
+        # @param resource_id - The id of the actor performing the delete authorization
+        #
+        def checker_delete(action, resource_id)
+          begin
+            object_resource = action.object_resource_class_name.constantize.find(action.object_resource_id)
+            if object_resource.destroy
+              action.status = 'Authorized'
+              action.checker_resource_id = resource_id
+              if action.save
+                flash[:notice] = "#{action.object_resource_class_name} authorized and deleted successfully."
+                redirect_to action: :index and return
+              else
+                flash[:notice] = "#{action.object_resource_class_name} deleted successfully. Action not updated"
+                redirect_to action: :index and return
+              end
+            else
+              flash[:error] = object_resource.errors.full_messages
+              redirect_to action: :index and return
+            end
+          rescue ActiveRecord::RecordNotFound
+            flash[:error] = 'Record not found'
+            redirect_to action: :index and return
+          end
         end
 
 
         # Cancel an action that had been previously initiated
         #
-        # @params action - The action that is to be cancelled
-        # @params resource_id - The id of the actor performing the cancellation
+        # @param id - The id of the action action that is to be cancelled
+        # @param resource_id - The id of the actor performing the cancellation
         #
         def cancel
           @action = Action.find(params[:id])
