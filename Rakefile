@@ -1,4 +1,4 @@
-require "bundler/gem_tasks"
+#require "bundler/gem_tasks"
 
 require 'rubygems'
 require 'bundler'
@@ -21,8 +21,8 @@ Jeweler::Tasks.new do |gem|
   gem.authors = ["Dennis Ondeng"]
   gem.files = FileList["[A-Z]*", "{bin,generators,lib,test}/**/*"]
 
-  gem.add_runtime_dependency 'bundler', '~> 1.6', '~> 1.6'
-  gem.add_development_dependency 'rake'
+  #gem.add_runtime_dependency 'bundler', '~> 1.6', '~> 1.6'
+  #gem.add_development_dependency 'rake'
 end
 
 Jeweler::RubygemsDotOrgTasks.new

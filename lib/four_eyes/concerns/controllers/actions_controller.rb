@@ -56,7 +56,7 @@ module FourEyes
           checker_resource_id = params[:checker_resource_id].to_i
           if eligible_to_check(@action, checker_resource_id)
             if @action && @action.initiated? && checker_resource_id
-              self.send(@action.action_type.gsub('action_','checker_'), @action, checker_resource_id)
+              self.send(@action.action_type.gsub('action_', 'checker_'), @action, checker_resource_id)
             end
           else
             flash[:notice] = "You are not eligible to authorize this action"
@@ -75,10 +75,10 @@ module FourEyes
             action.status = 'Authorized'
             action.checker_resource_id = resource_id
             if action.save
-              flash[:notice] = "#{action.object_resource_class_name} authorized and created successfully."
+              flash[:notice] = "#{action.object_resource_class_name.titlecase} authorized and created successfully."
               redirect_to action: :index and return
             else
-              flash[:notice] = "#{action.object_resource_class_name} created successfully. Action not updated"
+              flash[:notice] = "#{action.object_resource_class_name.titlecase} created successfully. Action not updated"
               redirect_to action: :index and return
             end
           else
@@ -94,21 +94,21 @@ module FourEyes
         #
         def checker_update(action, resource_id)
           begin
-          object_resource = action.object_resource_class_name.constantize.find(action.object_resource_id)
-          if object_resource.update_attributes(action.data.deep_symbolize_keys)
-            action.status = 'Authorized'
-            action.checker_resource_id = resource_id
-            if action.save
-              flash[:notice] = "#{action.object_resource_class_name} authorized and updated successfully."
-              redirect_to action: :index and return
+            object_resource = action.object_resource_class_name.constantize.find(action.object_resource_id)
+            if object_resource.update_attributes(action.data.deep_symbolize_keys)
+              action.status = 'Authorized'
+              action.checker_resource_id = resource_id
+              if action.save
+                flash[:notice] = "#{action.object_resource_class_name.titlecase} authorized and updated successfully."
+                redirect_to action: :index and return
+              else
+                flash[:notice] = "#{action.object_resource_class_name.titlecase} updated successfully. Action not updated"
+                redirect_to action: :index and return
+              end
             else
-              flash[:notice] = "#{action.object_resource_class_name} updated successfully. Action not updated"
+              flash[:error] = object_resource.errors.full_messages
               redirect_to action: :index and return
             end
-          else
-            flash[:error] = object_resource.errors.full_messages
-            redirect_to action: :index and return
-          end
           rescue ActiveRecord::RecordNotFound
             flash[:error] = 'Record not found'
             redirect_to action: :index and return
@@ -127,10 +127,10 @@ module FourEyes
               action.status = 'Authorized'
               action.checker_resource_id = resource_id
               if action.save
-                flash[:notice] = "#{action.object_resource_class_name} authorized and deleted successfully."
+                flash[:notice] = "#{action.object_resource_class_name.titlecase} authorized and deleted successfully."
                 redirect_to action: :index and return
               else
-                flash[:notice] = "#{action.object_resource_class_name} deleted successfully. Action not updated"
+                flash[:notice] = "#{action.object_resource_class_name.titlecase} deleted successfully. Action not updated"
                 redirect_to action: :index and return
               end
             else
@@ -156,7 +156,7 @@ module FourEyes
             @action.status = 'Cancelled'
             @action.checker_resource_id = checker_resource_id
             if @action.save
-              flash[:notice] = "Action on #{@action.object_resource_class_name} cancelled successfully."
+              flash[:notice] = "Action on #{@action.object_resource_class_name.titlecase} cancelled successfully."
               redirect_to action: :index and return
             else
               flash.now[:error] = @action.errors.full_messages

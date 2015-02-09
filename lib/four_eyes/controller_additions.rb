@@ -32,6 +32,7 @@ module FourEyes
         four_eyes_resource_class.add_maker_create_function(self, :maker_create, *args)
         four_eyes_resource_class.add_maker_update_function(self, :maker_update, *args)
         four_eyes_resource_class.add_maker_delete_function(self, :maker_delete, *args)
+        four_eyes_resource_class.add_maker_generic_function(self, :maker_generic, *args)
       end
 
       def four_eyes_resource_class
