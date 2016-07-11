@@ -1,6 +1,8 @@
 # FourEyes
 
-TODO: Write a gem description
+A gem to implement the maker-checker principle. The 4-eyes principle.
+
+
 
 ## Installation
 
