@@ -91,7 +91,9 @@ To add maker checker functionality, add the following before_filter to the contr
      end
      
    where in the example above, the call has the following format
-                          
+
+## TODO - Write spec tests.
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/four_eyes/fork )
