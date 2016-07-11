@@ -1,8 +1,5 @@
 module FourEyes
-  # This controller provides restful route handling for Accounts.
-  #
-  # The controller supports ActiveResource, and provides for
-  # HMTL, XML, and JSON presentation.
+  # This controller provides restful route handling for Actions.
   #
   # == Security:
   # Only GET requests are supported. You should ensure that your application

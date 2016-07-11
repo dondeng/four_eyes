@@ -59,7 +59,7 @@ module FourEyes
               self.send(@action.action_type.gsub('action_', 'checker_'), @action, checker_resource_id)
             end
           else
-            flash[:notice] = "You are not eligible to authorize this action"
+            flash[:notice] = 'You are not eligible to authorize this action'
             redirect_to action: :index and return
           end
         end
