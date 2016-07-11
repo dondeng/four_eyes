@@ -37,6 +37,12 @@ Or install it yourself as:
 
     $ gem install four_eyes
 
+### Database Setup
+
+Generate the migration files required by running:
+
+    rails g four_eyes
+
 ## Usage
 
 To add maker checker functionality, add the following before_filter to the controller in question.
