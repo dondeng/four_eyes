@@ -12,12 +12,14 @@ module FourEyes
         maker = args[0]
         object_class_name = args[1]
         data = args[3]
+        assignee = args[4]
 
         action = FourEyes::Action.new(maker: maker,
                                       action_type: 'action_create',
                                       object_resource_class_name: object_class_name,
                                       status: 'Initiated',
-                                      data: data)
+                                      data: data,
+                                      assignable: assignee)
         if action.save!
           true
         else
@@ -33,12 +35,14 @@ module FourEyes
         maker = args[0]
         object_resource = args[1]
         data = args[2]
+        assignee = args[3]
 
         action = FourEyes::Action.new(maker: maker,
                                       action_type: 'action_update',
                                       object_resource: object_resource,
                                       status: 'Initiated',
-                                      data: data)
+                                      data: data,
+                                      assignable: assignee)
         if action.save
           true
         else
@@ -54,12 +58,13 @@ module FourEyes
         maker = args[0]
         object_resource = args[1]
         data = args[2]
-
+        assignee = args[3]
         action = FourEyes::Action.new(maker: maker,
                                       action_type: 'action_delete',
                                       object_resource: object_resource,
                                       status: 'Initiated',
-                                      data: data)
+                                      data: data,
+                                      assignable: assignee)
         if action.save
           true
         else
