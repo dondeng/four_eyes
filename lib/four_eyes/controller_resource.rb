@@ -16,7 +16,7 @@ module FourEyes
 
         action = FourEyes::Action.new(maker: maker,
                                       action_type: 'action_create',
-                                      object_resource_class_name: object_class_name,
+                                      object_resource_type: object_class_name,
                                       status: 'Initiated',
                                       data: data,
                                       assignable: assignee)
