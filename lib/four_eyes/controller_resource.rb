@@ -6,6 +6,7 @@ module FourEyes
     # table with the status of 'Initiated'
     #
     def self.add_maker_create_function(controller_class, method, *args)
+      #TODO - extract options and process
       options = args.extract_options!
       controller_class.send :define_method, method do |*args|
         "#{method} #{args}"
@@ -30,6 +31,7 @@ module FourEyes
     end
 
     def self.add_maker_update_function(controller_class, method, *args)
+      #TODO - extract options and process
       options = args.extract_options!
       controller_class.send :define_method, method do |*args|
         maker = args[0]
@@ -53,6 +55,7 @@ module FourEyes
     end
 
     def self.add_maker_delete_function(controller_class, method, *args)
+      #TODO - extract options and process
       options = args.extract_options!
       controller_class.send  :define_method, method do |*args|
         maker = args[0]
@@ -75,6 +78,7 @@ module FourEyes
     end
 
     def self.add_maker_generic_function(controller_class, method, *args)
+      #TODO - extract options and process
       options = args.extract_options!
       controller_class.send  :define_method, method do |*args|
         maker = args[0]
