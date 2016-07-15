@@ -96,7 +96,7 @@ To add maker checker functionality, add the following before_filter to the contr
                      student.to_json)
      end
      
-   Minimal vies have been provided for viewing pending and authorized actions. You will probably want to override these
+   Minimal views have been provided for viewing pending and authorized actions. You will probably want to override these
    and style them accordingly to your application. 
    
    Please note four_ayes is agnostic for the type of authorization system you are using. Right now the only check that is performed is 
@@ -117,7 +117,7 @@ To add maker checker functionality, add the following before_filter to the contr
          end
        end 
 
-## TODO - Write spec tests.
+## TODO - Write spec tests.h
 
 ## Contributing
 
