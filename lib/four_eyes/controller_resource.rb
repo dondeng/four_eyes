@@ -9,14 +9,11 @@ module FourEyes
       options = args.extract_options!
       controller_class.send :define_method, method do |*args|
         "#{method} #{args}"
-        resource_class_name = args[0]
-        resource_id = args[1]
-        object_class_name = args[2]
+        maker = args[0]
+        object_class_name = args[1]
         data = args[3]
 
-        action = FourEyes::Action.new(resource_class_name: resource_class_name,
-                                      maker_resource_id: resource_id,
-                                      resource_class_name: resource_class_name,
+        action = FourEyes::Action.new(maker: maker,
                                       action_type: 'action_create',
                                       object_resource_class_name: object_class_name,
                                       status: 'Initiated',
@@ -33,17 +30,13 @@ module FourEyes
     def self.add_maker_update_function(controller_class, method, *args)
       options = args.extract_options!
       controller_class.send :define_method, method do |*args|
-        resource_class_name = args[0]
-        resource_id = args[1]
-        object_class_name = args[2]
-        object_resource_id = args[3]
-        data = args[4]
+        maker = args[0]
+        object_resource = args[1]
+        data = args[2]
 
-        action = FourEyes::Action.new(resource_class_name: resource_class_name,
-                                      maker_resource_id: resource_id,
+        action = FourEyes::Action.new(maker: maker,
                                       action_type: 'action_update',
-                                      object_resource_class_name: object_class_name,
-                                      object_resource_id: object_resource_id,
+                                      object_resource: object_resource,
                                       status: 'Initiated',
                                       data: data)
         if action.save
@@ -58,17 +51,13 @@ module FourEyes
     def self.add_maker_delete_function(controller_class, method, *args)
       options = args.extract_options!
       controller_class.send  :define_method, method do |*args|
-        resource_class_name = args[0]
-        resource_id = args[1]
-        object_class_name = args[2]
-        object_resource_id = args[3]
-        data = args[4]
+        maker = args[0]
+        object_resource = args[1]
+        data = args[2]
 
-        action = FourEyes::Action.new(resource_class_name: resource_class_name,
-                                      maker_resource_id: resource_id,
+        action = FourEyes::Action.new(maker: maker,
                                       action_type: 'action_delete',
-                                      object_resource_class_name: object_class_name,
-                                      object_resource_id: object_resource_id,
+                                      object_resource: object_resource,
                                       status: 'Initiated',
                                       data: data)
         if action.save
@@ -83,18 +72,14 @@ module FourEyes
     def self.add_maker_generic_function(controller_class, method, *args)
       options = args.extract_options!
       controller_class.send  :define_method, method do |*args|
-        resource_class_name = args[0]
-        resource_id = args[1]
-        object_class_name = args[2]
-        object_resource_id = args[3]
-        action = args[4]
-        data = args[5]
+        maker = args[0]
+        object_resource = args[1]
+        action = args[2]
+        data = args[3]
 
-        action = FourEyes::Action.new(resource_class_name: resource_class_name,
-                                      maker_resource_id: resource_id,
+        action = FourEyes::Action.new(maker: maker,
                                       action_type: action,
-                                      object_resource_class_name: object_class_name,
-                                      object_resource_id: object_resource_id,
+                                      object_resource: object_resource,
                                       status: 'Initiated',
                                       data: data)
         if action.save

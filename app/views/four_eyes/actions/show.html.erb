@@ -15,20 +15,34 @@
       <td><%= @action.action_type %></td>
     </tr>
     <tr>
-      <td>Maker-Checker Resource</td>
-      <td><%= @action.resource_class_name %></td>
+    <td>Maker </td>
+    <td><%= @action.maker_type %></td>
+  </tr>
+    <tr>
+      <td>Maker ID</td>
+      <td><%= @action.maker_id %></td>
+    </tr>
+
+    <tr>
+      <td>Assignee </td>
+      <td><%= @action.assignable_type %></td>
     </tr>
     <tr>
-      <td>Maker resource ID</td>
-      <td><%= @action.maker_resource_id %></td>
+      <td>Assignee ID</td>
+      <td><%= @action.assignable_id %></td>
+    </tr>
+
+    <tr>
+      <td>Checker </td>
+      <td><%= @action.checker_type %></td>
     </tr>
     <tr>
-      <td>Checker Resource ID</td>
-      <td><%= @action.checker_resource_id %></td>
+      <td>Checker ID</td>
+      <td><%= @action.checker_id %></td>
     </tr>
     <tr>
       <td>Object</td>
-      <td><%= @action.object_resource_class_name %></td>
+      <td><%= @action.object_resource_type %></td>
     </tr>
     <tr>
       <td>Object ID</td>
