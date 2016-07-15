@@ -22,7 +22,7 @@ would need to be cancelled and created again.
 
 A listing of all pending actions can be availed and depending on any authorization mechanism that you have implemented, a user can then access a pending 
 action and authorize it.
-
+       
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -65,6 +65,12 @@ Run the rake task:
       
 This does some clean up, specifically setting the checker_type column which did not exist before.      
 
+### Database Setup
+
+Generate the migration files required by running:
+
+    rails g four_eyes
+
 ## Usage
 
 To add maker checker functionality, add the following before_filter to the controller in question.
@@ -87,11 +93,11 @@ To add maker checker functionality, add the following before_filter to the contr
      end
   
    Once that is done, in the create, update or delete action you would call the following
-   
+
        maker_create([Resource eg. user performing the action],
-                         [Class name of the resource being worked on],
-                         [Parameters of object/resource in JSON format],
-                         [(Optional) suggested assignee of the action])  
+                     [Class name of the resource being worked on],
+                     [Parameters of object/resource in JSON format],
+                     [(Optional) suggested assignee of the action])  
    
    For example, in a system where the users are called Administrators, and the resource we are trying to create via
    maker checker is a Student, the call to create a student via maker-checker would look like this.
@@ -118,8 +124,29 @@ To add maker checker functionality, add the following before_filter to the contr
                      assignee_administrator)
      end
      
-   where in the example above, the call has the following format
-                          
+   Minimal views have been provided for viewing pending and authorized actions. You will probably want to override these
+   and style them accordingly to your application. 
+   
+   Please note four_ayes is agnostic for the type of authorization system you are using. Right now the only check that is performed is 
+   ensuring that the maker of an action cannot be the same person to authorize an action. You can extend this to your own authorization
+   system. For example using CanCan you can have something like this for a certain role:
+   
+   
+   
+       class AdminAbility
+         include CanCan::Ability
+         
+         def initialize(admin)
+           admin ||= Administrator.new
+           if admin.role? :Manager
+             can :authorize, FourEyes::Action, object_resource_class_name: %w(Student Teacher)
+             can :cancel, FourEyes::Action
+           end
+         end
+       end 
+
+## TODO - Write spec tests.h
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/four_eyes/fork )
