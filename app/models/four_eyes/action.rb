@@ -1,6 +1,7 @@
 module FourEyes
   class Action < ActiveRecord::Base
-    validates :action_type, :maker_resource_id, :status, presence: true
+    validates :action_type, :maker_id, :status, presence: true
+
     belongs_to :maker, polymorphic: true
     belongs_to :checker, polymorphic: true
     belongs_to :assignable, polymorphic: true

@@ -1,0 +1,25 @@
+Description:
+    Generator for four_eyes plugin
+
+Installation:
+
+    rails g four_eyes
+
+    This will:
+        Create a migration in the application for four_eyes_actions table
+
+    Once generated, run:
+        rake db:migrate
+
+
+Upgrade < 0.2 -> 0.2+:
+
+    rails g four_eyes:upgrade_four_eyes_one
+
+    This will:
+        Create a migration in the application for renaming columns and creating columns
+        that use polymorphisim for maker, checker and object_resource.
+
+    Once generated, run:
+        rake db:migrate
+        rake four_eyes_tasks:upgrade_to_version_one

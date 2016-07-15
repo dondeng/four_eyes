@@ -11,7 +11,7 @@ class UpdateFourEyesTablesOne < ActiveRecord::Migration
     rename_column :four_eyes_actions, :maker_resource_role_id, :maker_role_id
     rename_column :four_eyes_actions, :checker_resource_role_id, :checker_role_id
 
-    add_column :four_eyes_actions, :checker_type, :string
+    add_column :four_eyes_actions, :checker_type, :string, after: :checker_id
     add_column :four_eyes_actions, :assignable_type, :string
     add_column :four_eyes_actions, :assignable_id, :integer
 

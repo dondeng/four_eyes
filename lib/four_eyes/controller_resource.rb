@@ -12,8 +12,8 @@ module FourEyes
         "#{method} #{args}"
         maker = args[0]
         object_class_name = args[1]
-        data = args[3]
-        assignee = args[4]
+        data = args[2]
+        assignee = args[3] unless args[3].nil?
 
         action = FourEyes::Action.new(maker: maker,
                                       action_type: 'action_create',
@@ -37,7 +37,7 @@ module FourEyes
         maker = args[0]
         object_resource = args[1]
         data = args[2]
-        assignee = args[3]
+        assignee = args[3] unless args[3].nil?
 
         action = FourEyes::Action.new(maker: maker,
                                       action_type: 'action_update',

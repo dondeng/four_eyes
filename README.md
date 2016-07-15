@@ -20,7 +20,7 @@ responsible for performing the validation check to see if the resource is indeed
 the system state may change before authorization to a state that renders the action invalid. In such a scenario, the action 
 would need to be cancelled and created again.
 
-A listing of all pending actions can be availed and depending on any authorization mechanisim that you have implemented, a user can then access a pending 
+A listing of all pending actions can be availed and depending on any authorization mechanism that you have implemented, a user can then access a pending 
 action and authorize it.
 
 ## Installation
@@ -36,6 +36,34 @@ And then execute:
 Or install it yourself as:
 
     $ gem install four_eyes
+    
+Generate the migrations required
+    
+    $ rails g four_eyes
+    $ rake db:migrate
+    
+## Upgrading
+    
+### Upgrading from v0.1.x to v1.0.x
+    
+Switching to version 1 changes the implementation of the maker and checker resources to be 
+polymorphic relations of the action object. A assignable polymorphic relation has also been added to the actions 
+object so that a maker can easily (if desired) assign a pending action to someone specific for authorization. 
+
+To upgrade to v1.0.x run
+
+    rails g four_eyes:upgrade_four_eyes_one
+    
+to perform the migrations and changes necessary to the four_eyes_actions table to cater for polymorphism of the 
+maker, checker, and assignable. Run migrations:
+    
+    rake db:migrate
+    
+Run the rake task:
+    
+    rake four_eyes_tasks:upgrade_to_version_one 
+      
+This does some clean up, specifically setting the checker_type column which did not exist before.      
 
 ## Usage
 
@@ -60,34 +88,34 @@ To add maker checker functionality, add the following before_filter to the contr
   
    Once that is done, in the create, update or delete action you would call the following
    
-       maker_create([User resource performaing the action],
-                         [ID of resource performing the action],
+       maker_create([Resource eg. user performing the action],
                          [Class name of the resource being worked on],
-                         [Parameters of oject/resource in JSON format])  
+                         [Parameters of object/resource in JSON format],
+                         [(Optional) suggested assignee of the action])  
    
-   For exeample, in a system where the users are called Administrators, and the resource we are trying to create via
+   For example, in a system where the users are called Administrators, and the resource we are trying to create via
    maker checker is a Student, the call to create a student via maker-checker would look like this.
    
    
      def create
-         maker_create('Administrator',
-                       current_administrator_id,
+         maker_create(current_administrator,
                        'Student',
-                       student_params.to_json)    
+                       student_params.to_json,
+                       assignee_administrator)    
      end  
                        
      def update
-        maker_update('Administrator',
-                     current_administrator_id,
-                     'Student',
-                     student_params.to_json)   
+        maker_update(current_administrator,
+                     student,
+                     student_params.to_json,
+                     assignee_administrator)   
      end
      
      def destroy
-        maker_delete('Administrator',
-                     'current_administrator_id,
-                     'Student',
-                     student.to_json)
+        maker_delete(current_administrator
+                     student,
+                     student.to_json,
+                     assignee_administrator)
      end
      
    where in the example above, the call has the following format
