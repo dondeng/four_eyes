@@ -72,7 +72,9 @@ module FourEyes
         def authorize
           @action = Action.find(params[:id])
           checker_id = params[:checker_id].to_i
-          checker = @action.checker_type.constantize.find(checker_id)
+          checker_type = params[:checker_type]
+          raise 'Illegal Arguments' if (checker_id.blank? || checker_type.blank?)
+          checker = checker_type.constantize.find(checker_id)
           if @action && @action.initiated? && checker
             if eligible_to_check(@action, checker)
               self.send(@action.action_type.gsub('action_', 'checker_'), @action, checker)
