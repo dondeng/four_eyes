@@ -52,7 +52,9 @@ module FourEyes
         def cancel
           @action = Action.find(params[:id])
           checker_id = params[:checker_id].to_i
-          checker = @action.checker_type.constantize.find(checker_id)
+          checker_type = params[:checker_type]
+          raise 'Illegal Arguments' if (checker_id.blank? || checker_type.blank?)
+          checker = checker_type.constantize.find(checker_id)
           if @action
             @action.status = 'Cancelled'
             @action.checker = checker
