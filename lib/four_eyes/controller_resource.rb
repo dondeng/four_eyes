@@ -36,7 +36,8 @@ module FourEyes
       controller_class.send :define_method, method do |*args|
         maker = args[0]
         object_resource = args[1]
-        data = args[2]
+        before_data = args[2][:before_data]
+        data = args[2][:data]
         assignee = args[3] unless args[3].nil?
 
         action = FourEyes::Action.new(maker: maker,
@@ -44,6 +45,7 @@ module FourEyes
                                       object_resource: object_resource,
                                       status: 'Initiated',
                                       data: data,
+                                      before_data: before_data,
                                       assignable: assignee)
         if action.save
           true

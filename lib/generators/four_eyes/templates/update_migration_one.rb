@@ -14,6 +14,7 @@ class UpdateFourEyesTablesOne < ActiveRecord::Migration
     add_column :four_eyes_actions, :checker_type, :string, after: :checker_id
     add_column :four_eyes_actions, :assignable_type, :string
     add_column :four_eyes_actions, :assignable_id, :integer
+    add_column :four_eyes_actions, :before_data, :json
 
     add_index :four_eyes_actions, :maker_id
     add_index :four_eyes_actions, [:maker_type, :maker_id]
