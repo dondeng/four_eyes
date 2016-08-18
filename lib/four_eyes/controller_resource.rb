@@ -31,6 +31,7 @@ module FourEyes
     end
 
     def self.add_maker_update_function(controller_class, method, *args)
+
       #TODO - extract options and process
       options = args.extract_options!
       controller_class.send :define_method, method do |*args|
@@ -40,6 +41,11 @@ module FourEyes
         data = args[2][:data]
         assignee = args[3] unless args[3].nil?
 
+        if FourEyes::Action.exists?(ojbect_resource_type: object_resource.class.to_s,
+                                    object_resource_id: object_resource.id,
+                                    status: 'Initialized')
+          raise FourEyes::Errors::UnprocessableAction, 'Object has pending action'
+        end
         action = FourEyes::Action.new(maker: maker,
                                       action_type: 'action_update',
                                       object_resource: object_resource,
@@ -48,10 +54,9 @@ module FourEyes
                                       before_data: before_data,
                                       assignable: assignee)
         if action.save
-          true
+          return action
         else
-          # TODO - dondeng - Better to raise an exception here
-          false
+          raise FourEyes::Errors::UnprocessableAction, 'Failed to create action'
         end
       end
     end
@@ -64,6 +69,11 @@ module FourEyes
         object_resource = args[1]
         data = args[2]
         assignee = args[3]
+        if FourEyes::Action.exists?(ojbect_resource_type: object_resource.class.to_s,
+                                    object_resource_id: object_resource.id,
+                                    status: 'Initialized')
+          raise FourEyes::Errors::UnprocessableAction, 'Object has pending action'
+        end
         action = FourEyes::Action.new(maker: maker,
                                       action_type: 'action_delete',
                                       object_resource: object_resource,
@@ -71,10 +81,9 @@ module FourEyes
                                       data: data,
                                       assignable: assignee)
         if action.save
-          true
+          return action
         else
-          # TODO - dondeng - Better to raise an exception here
-          false
+          raise FourEyes::Errors::UnprocessableAction, 'Failed to create action'
         end
       end
     end
@@ -88,16 +97,21 @@ module FourEyes
         action = args[2]
         data = args[3]
 
+        if FourEyes::Action.exists?(ojbect_resource_type: object_resource.class.to_s,
+                                    object_resource_id: object_resource.id,
+                                    status: 'Initialized')
+          raise FourEyes::Errors::UnprocessableAction, 'Object has pending action'
+        end
+
         action = FourEyes::Action.new(maker: maker,
                                       action_type: action,
                                       object_resource: object_resource,
                                       status: 'Initiated',
                                       data: data)
         if action.save
-          true
+          return action
         else
-          # TODO - dondeng - Better to raise an exception here
-          false
+          raise FourEyes::Errors::UnprocessableAction, 'Failed to create action'
         end
       end
     end
