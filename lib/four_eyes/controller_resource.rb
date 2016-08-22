@@ -68,7 +68,7 @@ module FourEyes
         maker = args[0]
         object_resource = args[1]
         data = args[2]
-        assignee = args[3]
+        assignee = args[3] unless args[3].nil?
         if FourEyes::Action.exists?(ojbect_resource_type: object_resource.class.to_s,
                                     object_resource_id: object_resource.id,
                                     status: 'Initialized')
@@ -96,6 +96,7 @@ module FourEyes
         object_resource = args[1]
         action = args[2]
         data = args[3]
+        assignee = args[4] unless args[4].nil?
 
         if FourEyes::Action.exists?(ojbect_resource_type: object_resource.class.to_s,
                                     object_resource_id: object_resource.id,
@@ -107,7 +108,8 @@ module FourEyes
                                       action_type: action,
                                       object_resource: object_resource,
                                       status: 'Initiated',
-                                      data: data)
+                                      data: data,
+                                      assignable: assignee)
         if action.save
           return action
         else
