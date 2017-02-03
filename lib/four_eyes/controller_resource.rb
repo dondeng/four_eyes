@@ -53,7 +53,6 @@ module FourEyes
                                       assignable: assignee)
         if action.save
           return action
-
         else
           raise FourEyes::Errors::UnprocessableAction, 'Failed to create action'
         end
