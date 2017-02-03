@@ -39,27 +39,53 @@ module FourEyes
         # doing the checking
         #
         # @params action - The action to be authorized
-        # @params resource - The id of the actor requesting the authorization
+        # @params checker - The checker resource requesting to authorize
         #
-        def eligible_to_check(action, resource_id)
-          action.maker_resource_id != resource_id
+        # For now the resource type of makers and checkers needs to be the same
+        #
+        def eligible_to_check(action, checker)
+          (action.maker_id != checker.id) && (action.maker_type == checker.class.to_s)
+        end
+
+        # Cancel an action that had been previously initiated
+        #
+        def cancel
+          @action = Action.find(params[:id])
+          checker_id = params[:checker_id].to_i
+          checker_type = params[:checker_type]
+          raise 'Illegal Arguments' if (checker_id.blank? || checker_type.blank?)
+          checker = checker_type.constantize.find(checker_id)
+          if @action
+            @action.status = 'Cancelled'
+            @action.checker = checker
+            if @action.save
+              flash[:notice] = "Action on #{@action.object_resource_type.titlecase} cancelled successfully."
+              redirect_to action: :index and return
+            else
+              flash.now[:error] = @action.errors.full_messages
+              redirect_to action: :index and return
+            end
+          end
         end
 
         # Perform the checker action for the maker checker actions
         # Dispatch to function to process the corresponding action (create, upated, delete)
         #
-        # @param id - The id of the action being authorized
-        # @param checker_resource_id - The id of the actor performing the authorization
-        #
         def authorize
           @action = Action.find(params[:id])
-          checker_resource_id = params[:checker_resource_id].to_i
-          if eligible_to_check(@action, checker_resource_id)
-            if @action && @action.initiated? && checker_resource_id
-              self.send(@action.action_type.gsub('action_', 'checker_'), @action, checker_resource_id)
+          checker_id = params[:checker_id].to_i
+          checker_type = params[:checker_type]
+          raise 'Illegal Arguments' if (checker_id.blank? || checker_type.blank?)
+          checker = checker_type.constantize.find(checker_id)
+          if @action && @action.initiated? && checker
+            if eligible_to_check(@action, checker)
+              self.send(@action.action_type.gsub('action_', 'checker_'), @action, checker)
+            else
+              flash[:error] = 'You are not eligible to authorize this action'
+              redirect_to action: :index and return
             end
           else
-            flash[:notice] = 'You are not eligible to authorize this action'
+            flash[:error] = 'Illegal operation'
             redirect_to action: :index and return
           end
         end
@@ -67,18 +93,18 @@ module FourEyes
         # Retrieve hash of saved parameters and instantiate a new object of type object_resource_class_name
         #
         # @param action - The action to authorize
-        # @param resource_id - The id of the actor performing the authorization
+        # @param checker - The checker resource requesting to authorize
         #
-        def checker_create(action, resource_id)
-          object_resource = action.object_resource_class_name.constantize.new(action.data.deep_symbolize_keys)
+        def checker_create(action, checker)
+          object_resource = action.object_resource_type.constantize.new(action.data.deep_symbolize_keys)
           if object_resource.save
             action.status = 'Authorized'
-            action.checker_resource_id = resource_id
+            action.checker = checker
             if action.save
-              flash[:notice] = "#{action.object_resource_class_name.titlecase} authorized and created successfully."
+              flash[:notice] = "#{action.object_resource_type.titlecase} authorized and created successfully."
               redirect_to action: :index and return
             else
-              flash[:notice] = "#{action.object_resource_class_name.titlecase} created successfully. Action not updated"
+              flash[:notice] = "#{action.object_resource_type.titlecase} created successfully. Action not updated"
               redirect_to action: :index and return
             end
           else
@@ -90,19 +116,19 @@ module FourEyes
         # Retrieve hash of saved parameters and update the object of type object_resource_class_name
         #
         # @param action - The action to authorize
-        # @param resource_id - The id of the actor performing the authorization
+        # @param checker - The checker resource requesting to authorize
         #
-        def checker_update(action, resource_id)
+        def checker_update(action, checker)
           begin
-            object_resource = action.object_resource_class_name.constantize.find(action.object_resource_id)
+            object_resource = action.object_resource_type.constantize.find(action.object_resource_id)
             if object_resource.update_attributes(action.data.deep_symbolize_keys)
               action.status = 'Authorized'
-              action.checker_resource_id = resource_id
+              action.checker = checker
               if action.save
-                flash[:notice] = "#{action.object_resource_class_name.titlecase} authorized and updated successfully."
+                flash[:notice] = "#{action.object_resource_type.titlecase} authorized and updated successfully."
                 redirect_to action: :index and return
               else
-                flash[:notice] = "#{action.object_resource_class_name.titlecase} updated successfully. Action not updated"
+                flash[:notice] = "#{action.object_resource_type.titlecase} updated successfully. Action not updated"
                 redirect_to action: :index and return
               end
             else
@@ -118,19 +144,19 @@ module FourEyes
         # Retrieve a delete action and call destroy on it
         #
         # @param action - The action to authorize
-        # @param resource_id - The id of the actor performing the delete authorization
+        # @param checker - The checker resource requesting to authorize
         #
-        def checker_delete(action, resource_id)
+        def checker_delete(action, checker)
           begin
-            object_resource = action.object_resource_class_name.constantize.find(action.object_resource_id)
+            object_resource = action.object_resource_type.constantize.find(action.object_resource_id)
             if object_resource.destroy
               action.status = 'Authorized'
-              action.checker_resource_id = resource_id
+              action.checker = checker
               if action.save
-                flash[:notice] = "#{action.object_resource_class_name.titlecase} authorized and deleted successfully."
+                flash[:notice] = "#{action.object_resource_type.titlecase} authorized and deleted successfully."
                 redirect_to action: :index and return
               else
-                flash[:notice] = "#{action.object_resource_class_name.titlecase} deleted successfully. Action not updated"
+                flash[:notice] = "#{action.object_resource_type.titlecase} deleted successfully. Action not updated"
                 redirect_to action: :index and return
               end
             else
@@ -140,28 +166,6 @@ module FourEyes
           rescue ActiveRecord::RecordNotFound
             flash[:error] = 'Record not found'
             redirect_to action: :index and return
-          end
-        end
-
-
-        # Cancel an action that had been previously initiated
-        #
-        # @param id - The id of the action action that is to be cancelled
-        # @param resource_id - The id of the actor performing the cancellation
-        #
-        def cancel
-          @action = Action.find(params[:id])
-          checker_resource_id = params[:checker_resource_id].to_i
-          if @action
-            @action.status = 'Cancelled'
-            @action.checker_resource_id = checker_resource_id
-            if @action.save
-              flash[:notice] = "Action on #{@action.object_resource_class_name.titlecase} cancelled successfully."
-              redirect_to action: :index and return
-            else
-              flash.now[:error] = @action.errors.full_messages
-              redirect_to action: :index and return
-            end
           end
         end
       end

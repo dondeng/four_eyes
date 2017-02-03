@@ -19,8 +19,8 @@
           <td><%=link_to(action.id, action_path(action)) %></td>
           <td><%= action.created_at %></td>
           <td><%=h action.action_type %></td>
-          <td><%=h action.maker_resource_id  %></td>
-          <td><%=h action.object_resource_class_name  %></td>
+          <td><%=h action.maker_id  %></td>
+          <td><%=h action.object_resource_type  %></td>
           <td><%=h action.status  %></td>
           <td><%=h action.data %></td>
         </tr>

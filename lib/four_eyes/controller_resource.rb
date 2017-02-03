@@ -95,13 +95,11 @@ module FourEyes
         action = args[2]
         data = args[3]
         assignee = args[4] unless args[4].nil?
-
         if FourEyes::Action.exists?(object_resource_type: object_resource.class.to_s,
                                     object_resource_id: object_resource.id,
                                     status: 'Initialized')
           raise FourEyes::Errors::UnprocessableAction, 'Object has pending action'
         end
-
         action = FourEyes::Action.new(maker: maker,
                                       action_type: action,
                                       object_resource: object_resource,
