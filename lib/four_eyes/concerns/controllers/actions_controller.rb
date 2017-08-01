@@ -40,11 +40,8 @@ module FourEyes
         #
         # @params action - The action to be authorized
         # @params checker - The checker resource requesting to authorize
-        #
-        # For now the resource type of makers and checkers needs to be the same
-        #
         def eligible_to_check(action, checker)
-          (action.maker_id != checker.id) && (action.maker_type == checker.class.to_s)
+          action.maker_id != checker.id
         end
 
         # Cancel an action that had been previously initiated
@@ -56,6 +53,12 @@ module FourEyes
           raise 'Illegal Arguments' if (checker_id.blank? || checker_type.blank?)
           checker = checker_type.constantize.find(checker_id)
           if @action
+            # If the cancel action requires an operation to be made then call
+            # the corresponding cancel action method
+            if self.respond_to?(@action.action_type.gsub('action_', 'cancel_'))
+              self.send(@action.action_type.gsub('action_', 'cancel_'), @action, checker)
+            end
+
             @action.status = 'Cancelled'
             @action.checker = checker
             if @action.save
