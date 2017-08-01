@@ -41,7 +41,7 @@ module FourEyes
         # @params action - The action to be authorized
         # @params checker - The checker resource requesting to authorize
         def eligible_to_check(action, checker)
-          action.maker_id != checker.id
+          action.maker != checker
         end
 
         # Cancel an action that had been previously initiated
