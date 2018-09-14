@@ -50,24 +50,23 @@ module FourEyes
           @action = Action.find(params[:id])
           checker_id = params[:checker_id].to_i
           checker_type = params[:checker_type]
-          raise 'Illegal Arguments' if (checker_id.blank? || checker_type.blank?)
+          raise 'Illegal Arguments' if checker_id.blank? || checker_type.blank?
           checker = checker_type.constantize.find(checker_id)
           if @action
             # If the cancel action requires an operation to be made then call
             # the corresponding cancel action method
-            if self.respond_to?(@action.action_type.gsub('action_', 'cancel_'))
-              self.send(@action.action_type.gsub('action_', 'cancel_'), @action, checker)
+            if respond_to?(@action.action_type.gsub('action_', 'cancel_'))
+              send(@action.action_type.gsub('action_', 'cancel_'), @action, checker)
             end
 
             @action.status = 'Cancelled'
             @action.checker = checker
             if @action.save
               flash[:notice] = "Action on #{@action.object_resource_type.titlecase} cancelled successfully."
-              redirect_to action: :index and return
             else
               flash.now[:error] = @action.errors.full_messages
-              redirect_to action: :index and return
             end
+            redirect_to action: :index and return
           end
         end
 
@@ -78,11 +77,11 @@ module FourEyes
           @action = Action.find(params[:id])
           checker_id = params[:checker_id].to_i
           checker_type = params[:checker_type]
-          raise 'Illegal Arguments' if (checker_id.blank? || checker_type.blank?)
+          raise 'Illegal Arguments' if checker_id.blank? || checker_type.blank?
           checker = checker_type.constantize.find(checker_id)
           if @action && @action.initiated? && checker
             if eligible_to_check(@action, checker)
-              self.send(@action.action_type.gsub('action_', 'checker_'), @action, checker)
+              send(@action.action_type.gsub('action_', 'checker_'), @action, checker)
             else
               flash[:error] = 'You are not eligible to authorize this action'
               redirect_to action: :index and return
@@ -105,15 +104,13 @@ module FourEyes
             action.checker = checker
             if action.save
               flash[:notice] = "#{action.object_resource_type.titlecase} authorized and created successfully."
-              redirect_to action: :index and return
             else
               flash[:notice] = "#{action.object_resource_type.titlecase} created successfully. Action not updated"
-              redirect_to action: :index and return
             end
           else
             flash[:error] = object_resource.errors.full_messages
-            redirect_to action: :index and return
           end
+          redirect_to action: :index and return
         end
 
         # Retrieve hash of saved parameters and update the object of type object_resource_class_name
@@ -129,15 +126,13 @@ module FourEyes
               action.checker = checker
               if action.save
                 flash[:notice] = "#{action.object_resource_type.titlecase} authorized and updated successfully."
-                redirect_to action: :index and return
               else
                 flash[:notice] = "#{action.object_resource_type.titlecase} updated successfully. Action not updated"
-                redirect_to action: :index and return
               end
             else
               flash[:error] = object_resource.errors.full_messages
-              redirect_to action: :index and return
             end
+            redirect_to action: :index and return
           rescue ActiveRecord::RecordNotFound
             flash[:error] = 'Record not found'
             redirect_to action: :index and return
@@ -157,15 +152,13 @@ module FourEyes
               action.checker = checker
               if action.save
                 flash[:notice] = "#{action.object_resource_type.titlecase} authorized and deleted successfully."
-                redirect_to action: :index and return
               else
                 flash[:notice] = "#{action.object_resource_type.titlecase} deleted successfully. Action not updated"
-                redirect_to action: :index and return
               end
             else
               flash[:error] = object_resource.errors.full_messages
-              redirect_to action: :index and return
             end
+            redirect_to action: :index and return
           rescue ActiveRecord::RecordNotFound
             flash[:error] = 'Record not found'
             redirect_to action: :index and return
