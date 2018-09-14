@@ -1,4 +1,11 @@
 module FourEyes
+  # Performs the job of adding maker functions in the controller that
+  # Intends to use maker-checker for some of its actions
+  # The functions added to the controller are:
+  #   1. maker_create  function
+  #   2. maker_update function
+  #   3. maker_delete function
+  #   4. maker_generic function
   class ControllerResource
 
     def initialize(controller, *args)
