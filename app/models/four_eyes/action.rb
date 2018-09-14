@@ -12,15 +12,15 @@ module FourEyes
     end
 
     def initiated?
-      self.status == 'Initiated'
+      status == 'Initiated'
     end
 
     def cancelled?
-      self.status == 'Cancelled'
+      status == 'Cancelled'
     end
 
     def authorized?
-      self.status == 'Authorized'
+      status == 'Authorized'
     end
   end
 end
