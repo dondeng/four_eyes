@@ -124,7 +124,7 @@ module FourEyes
         def checker_update(action, checker)
           begin
             object_resource = action.object_resource_type.constantize.find(action.object_resource_id)
-            if object_resource.update_attributes(action.data.deep_symbolize_keys)
+            if object_resource.update(action.data.deep_symbolize_keys)
               action.status = 'Authorized'
               action.checker = checker
               if action.save
