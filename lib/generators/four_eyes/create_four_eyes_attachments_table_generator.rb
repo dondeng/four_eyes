@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module FourEyes
-  class UpgradeFourEyesTwoGenerator < Rails::Generators::Base
+  class CreateFourEyesAttachmentsTableGenerator < Rails::Generators::Base
     include Rails::Generators::Migration
 
     def self.source_root
@@ -19,7 +19,7 @@ module FourEyes
     end
 
     def create_migration_file
-      migration_template 'update_migration_two.rb', 'db/migrate/update_four_eyes_tables_two.rb'
+      migration_template 'create_four_eyes_attachments_table.rb', 'db/migrate/create_four_eyes_attachments_table.rb'
     end
   end
 end

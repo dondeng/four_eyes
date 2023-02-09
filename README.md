@@ -72,7 +72,7 @@ An `Action` can have many `Attachment`s, which can, in turn, have multiple pages
 
 To upgrade to v2.0.x run
 
-    rails g four_eyes:upgrade_four_eyes_two
+    rails g four_eyes:create_four_eyes_attachments_table
 
 to generate the migration that adds the four_eyes_attachments table. Run migrations:
 

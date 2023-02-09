@@ -1,4 +1,4 @@
-class UpdateFourEyesTablesTwo < ActiveRecord::Migration[6.1]
+class CreateFourEyesAttachmentsTable < ActiveRecord::Migration[6.1]
   def change
     create_table(:four_eyes_attachments) do |t|
       t.string :name
