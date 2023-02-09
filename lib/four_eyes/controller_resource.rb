@@ -6,102 +6,110 @@ module FourEyes
     # table with the status of 'Initiated'
     #
     def self.add_maker_create_function(controller_class, method, *args)
+      #TODO - extract options and process
       options = args.extract_options!
       controller_class.send :define_method, method do |*args|
         "#{method} #{args}"
-        resource_class_name = args[0]
-        resource_id = args[1]
-        object_class_name = args[2]
-        data = args[3]
+        maker = args[0]
+        object_class_name = args[1]
+        data = args[2]
+        assignee = args[3] unless args[3].nil?
 
-        action = FourEyes::Action.new(resource_class_name: resource_class_name,
-                                      maker_resource_id: resource_id,
-                                      resource_class_name: resource_class_name,
+        action = FourEyes::Action.new(maker: maker,
                                       action_type: 'action_create',
-                                      object_resource_class_name: object_class_name,
+                                      object_resource_type: object_class_name,
                                       status: 'Initiated',
-                                      data: data)
-        if action.save!
-          true
+                                      data: data,
+                                      assignable: assignee)
+        if action.save
+          return action
         else
-          # TODO dondeng - Better to raise an exception here
-          false
+          raise FourEyes::Errors::UnprocessableAction, 'Failed to create action'
         end
       end
     end
 
     def self.add_maker_update_function(controller_class, method, *args)
+      #TODO - extract options and process
       options = args.extract_options!
       controller_class.send :define_method, method do |*args|
-        resource_class_name = args[0]
-        resource_id = args[1]
-        object_class_name = args[2]
-        object_resource_id = args[3]
-        data = args[4]
+        maker = args[0]
+        object_resource = args[1]
+        before_data = args[2][:before_data]
+        data = args[2][:data]
+        assignee = args[3] unless args[3].nil?
 
-        action = FourEyes::Action.new(resource_class_name: resource_class_name,
-                                      maker_resource_id: resource_id,
+        if FourEyes::Action.exists?(object_resource_type: object_resource.class.to_s,
+                                    object_resource_id: object_resource.id,
+                                    status: 'Initialized')
+          raise FourEyes::Errors::UnprocessableAction, 'Object has pending action'
+        end
+        action = FourEyes::Action.new(maker: maker,
                                       action_type: 'action_update',
-                                      object_resource_class_name: object_class_name,
-                                      object_resource_id: object_resource_id,
+                                      object_resource: object_resource,
                                       status: 'Initiated',
-                                      data: data)
+                                      data: data,
+                                      before_data: before_data,
+                                      assignable: assignee)
         if action.save
-          true
+          return action
         else
-          # TODO - dondeng - Better to raise an exception here
-          false
+          raise FourEyes::Errors::UnprocessableAction, 'Failed to create action'
         end
       end
     end
 
     def self.add_maker_delete_function(controller_class, method, *args)
+      #TODO - extract options and process
       options = args.extract_options!
       controller_class.send  :define_method, method do |*args|
-        resource_class_name = args[0]
-        resource_id = args[1]
-        object_class_name = args[2]
-        object_resource_id = args[3]
-        data = args[4]
-
-        action = FourEyes::Action.new(resource_class_name: resource_class_name,
-                                      maker_resource_id: resource_id,
+        maker = args[0]
+        object_resource = args[1]
+        data = args[2]
+        assignee = args[3] unless args[3].nil?
+        if FourEyes::Action.exists?(object_resource_type: object_resource.class.to_s,
+                                    object_resource_id: object_resource.id,
+                                    status: 'Initialized')
+          raise FourEyes::Errors::UnprocessableAction, 'Object has pending action'
+        end
+        action = FourEyes::Action.new(maker: maker,
                                       action_type: 'action_delete',
-                                      object_resource_class_name: object_class_name,
-                                      object_resource_id: object_resource_id,
+                                      object_resource: object_resource,
                                       status: 'Initiated',
-                                      data: data)
+                                      data: data,
+                                      assignable: assignee)
         if action.save
-          true
+          return action
         else
-          # TODO - dondeng - Better to raise an exception here
-          false
+          raise FourEyes::Errors::UnprocessableAction, 'Failed to create action'
         end
       end
     end
 
     def self.add_maker_generic_function(controller_class, method, *args)
+      #TODO - extract options and process
       options = args.extract_options!
       controller_class.send  :define_method, method do |*args|
-        resource_class_name = args[0]
-        resource_id = args[1]
-        object_class_name = args[2]
-        object_resource_id = args[3]
-        action = args[4]
-        data = args[5]
-
-        action = FourEyes::Action.new(resource_class_name: resource_class_name,
-                                      maker_resource_id: resource_id,
+        maker = args[0]
+        object_resource = args[1]
+        action = args[2]
+        data = args[3]
+        assignee = args[4] unless args[4].nil?
+        if FourEyes::Action.exists?(object_resource_type: object_resource.class.to_s,
+                                    object_resource_id: object_resource.id,
+                                    status: 'Initialized')
+          raise FourEyes::Errors::UnprocessableAction, 'Object has pending action'
+        end
+        action = FourEyes::Action.new(maker: maker,
                                       action_type: action,
-                                      object_resource_class_name: object_class_name,
-                                      object_resource_id: object_resource_id,
+                                      object_resource: object_resource,
                                       status: 'Initiated',
-                                      data: data)
+                                      data: data,
+                                      assignable: assignee)
         if action.save
-          true
+          return action
         else
-          # TODO - dondeng - Better to raise an exception here
-          false
+          raise FourEyes::Errors::UnprocessableAction, 'Failed to create action'
         end
       end
     end

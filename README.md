@@ -36,6 +36,47 @@ And then execute:
 Or install it yourself as:
 
     $ gem install four_eyes
+    
+Generate the migrations required
+    
+    $ rails g four_eyes
+    $ rake db:migrate
+    
+## Upgrading
+    
+### Upgrading from v0.1.x to v1.0.x
+    
+Switching to version 1 changes the implementation of the maker and checker resources to be 
+polymorphic relations of the action object. A assignable polymorphic relation has also been added to the actions 
+object so that a maker can easily (if desired) assign a pending action to someone specific for authorization. 
+
+To upgrade to v1.0.x run
+
+    rails g four_eyes:upgrade_four_eyes_one
+    
+to perform the migrations and changes necessary to the four_eyes_actions table to cater for polymorphism of the 
+maker, checker, and assignable. Run migrations:
+    
+    rake db:migrate
+    
+Run the rake task:
+    
+    rake four_eyes_tasks:upgrade_to_version_one 
+      
+This does some clean up, specifically setting the checker_type column which did not exist before.
+
+### Upgrading from v1.0.x to v2.0.x
+
+Switching to version 2 introduces a new model, `FourEyes::Attachment` that enables attaching files to `FourEyes::Action`s,
+An `Action` can have many `Attachment`s, which can, in turn, have multiple pages.
+
+To upgrade to v2.0.x run
+
+    rails g four_eyes:create_four_eyes_attachments_table
+
+to generate the migration that adds the four_eyes_attachments table. Run migrations:
+
+    rake db:migrate
 
 ### Database Setup
 
@@ -55,48 +96,48 @@ To add maker checker functionality, add the following before_filter to the contr
    To exempt any one of the actions
   
      class StudentsController < ApplicationController
-       add_maker_checker_to_resource, except: :delete
+       add_maker_checker_to_resource except: :delete
      end
   
    To include only a subset of the actions
   
      class StudentsController < ApplicationController
-       add_maker_checker_to_resource, only: [:create, :update]
+       add_maker_checker_to_resource only: [:create, :update]
      end
   
    Once that is done, in the create, update or delete action you would call the following
-   
-       maker_create([User resource performing the action],
-                         [ID of resource performing the action],
-                         [Class name of the resource being worked on],
-                         [Parameters of oject/resource in JSON format])  
+
+       maker_create([Resource eg. user performing the action],
+                     [Class name of the resource being worked on],
+                     [Parameters of object/resource in JSON format],
+                     [(Optional) suggested assignee of the action])  
    
    For example, in a system where the users are called Administrators, and the resource we are trying to create via
    maker checker is a Student, the call to create a student via maker-checker would look like this.
    
    
      def create
-         maker_create('Administrator',
-                       current_administrator_id,
+         maker_create(current_administrator,
                        'Student',
-                       student_params.to_json)    
+                       student_params.to_json,
+                       assignee_administrator)    
      end  
                        
      def update
-        maker_update('Administrator',
-                     current_administrator_id,
-                     'Student',
-                     student_params.to_json)   
+        maker_update(current_administrator,
+                     student,
+                     student_params.to_json,
+                     assignee_administrator)   
      end
      
      def destroy
-        maker_delete('Administrator',
-                     'current_administrator_id,
-                     'Student',
-                     student.to_json)
+        maker_delete(current_administrator
+                     student,
+                     student.to_json,
+                     assignee_administrator)
      end
      
-   Minimal vies have been provided for viewing pending and authorized actions. You will probably want to override these
+   Minimal views have been provided for viewing pending and authorized actions. You will probably want to override these
    and style them accordingly to your application. 
    
    Please note four_ayes is agnostic for the type of authorization system you are using. Right now the only check that is performed is 
@@ -117,7 +158,61 @@ To add maker checker functionality, add the following before_filter to the contr
          end
        end 
 
-## TODO - Write spec tests.
+## Attaching Files to Actions
+
+four_eyes includes an integration with [ActiveStorage](https://edgeguides.rubyonrails.org/active_storage_overview.html) 
+that allows you to attach files to four_eyes action.
+
+> **Note:**
+> Usage of this feature requires ActiveStorage to have been set up in yor Rails project. To learn how to set up ActiveStorage,
+> please refer to the [official ActiveStorage documentation](https://edgeguides.rubyonrails.org/https://edgeguides.rubyonrails.org/active_storage_overview.html#setup)..
+ 
+A `FourEyes::Action` can have multiple `` which in turn canhave multiple `pages`. 
+The `pages` property on `FourEyes::Attachment` is an ActiveStorage [has_many_attached](https://edgeguides.rubyonrails.org/active_storage_overview.html#has-many-attached) relationship and has all the methods and functionality provided by ActiveStorage. 
+
+### Attaching Files
+
+This is done using the [`attach`](https://edgeapi.rubyonrails.org/classes/ActiveStorage/Attached/Many.html#method-i-attach) methods on the `:files` property of `FourEyes::Action`, like so.
+
+```ruby
+action = maker_create(current_user, Gallery.name, gallery_params.except[:images])
+attachment = action.attachments.create(name: "Result Slip", data: { semester: 1, year: 3 })
+attachment.pages.attach(gallery_params[:images])
+```
+
+### Checking for Attached Files
+
+To check for attached files, use the [`attached?`](https://edgeapi.rubyonrails.org/classes/ActiveStorage/Attached/Many.html#method-i-attached-3F) method.
+
+```ruby
+action = FourEyes::Action.first
+attachment = action.attachments.first
+attachment.pages.attached?
+```
+
+### Detaching Attached files
+
+To detach files attached to a `FourEyes::Attachment`, use the [`purge`](https://edgeapi.rubyonrails.org/classes/ActiveStorage/Attached/Many.html#method-i-detach) method.
+
+```ruby
+action = FourEyes::Action.first
+attachment = action.attachments.first
+
+attachment.files.purge # <= # Synchronously destroy the avatar and actual resource files.
+# OR
+attachment.files.purge_later # <= # Destroy the associated models and actual resource files async, via Active Job.
+```
+
+### Accessing Attached files
+
+ActiveStorage provides a number of ways to access attached files. Please refer to the Rails Guides to find out different
+ways of [serving](https://edgeguides.rubyonrails.org/active_storage_overview.html#serving-files),
+[downloading](https://edgeguides.rubyonrails.org/active_storage_overview.html#analyzing-files),
+[analyzing](https://edgeguides.rubyonrails.org/active_storage_overview.html#analyzing-files) and 
+[displaying](https://edgeguides.rubyonrails.org/active_storage_overview.html#displaying-images-videos-and-pdfs) files 
+stored via ActiveStorage.
+
+## TODO - Write spec tests.h
 
 ## Contributing
 

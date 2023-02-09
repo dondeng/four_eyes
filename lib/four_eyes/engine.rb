@@ -7,5 +7,6 @@ require 'four_eyes/concerns/controllers/actions_controller'
 module FourEyes
   class Engine < ::Rails::Engine
     isolate_namespace FourEyes
+    config.autoload_paths += Dir["#{config.root}/lib"]
   end
 end
